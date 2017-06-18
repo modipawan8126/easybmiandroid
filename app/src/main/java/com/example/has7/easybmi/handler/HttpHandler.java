@@ -24,35 +24,11 @@ public class HttpHandler {
     public HttpHandler() {
     }
 
-   /* public String makePostServiceCall(String reqUrl) {
-        String response = null;
-        try {
-            Log.d(TAG, "Url: " + reqUrl);
-            URL url = new URL(reqUrl);
-            Log.d(TAG, "Establishing connection to url");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            Log.d(TAG, "Received response");
-            InputStream in = new BufferedInputStream(conn.getInputStream());
-            response = convertStreamToString(in);
-        } catch (MalformedURLException e) {
-            Log.e(TAG, "MalformedURLException: " + e.getMessage());
-        } catch (ProtocolException e) {
-            Log.e(TAG, "ProtocolException: " + e.getMessage());
-        } catch (IOException e) {
-            Log.e(TAG, "IOException: " + e.getMessage());
-        } catch (Exception e) {
-            Log.e(TAG, "Exception: " + e.getMessage());
-        }
-        return response;
-    }*/
-
     public String makeServiceCall(String reqUrl, String method, String data) {
         String response = null;
         try {
             Log.d(TAG, "Url: " + reqUrl);
             URL url = new URL(reqUrl);
-            Log.d(TAG, "Establishing connection to url");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod(method);
             conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
@@ -61,7 +37,6 @@ public class HttpHandler {
             wr.writeBytes(data);
             wr.flush();
             wr.close();
-            Log.d(TAG, "Received response " + conn.getInputStream());
             InputStream in = new BufferedInputStream(conn.getInputStream());
             response = convertStreamToString(in);
         } catch (MalformedURLException e) {
@@ -77,14 +52,11 @@ public class HttpHandler {
     }
 
     private String convertStreamToString(InputStream is) {
-        Log.d(this.getClass().getSimpleName(), "Converting Response Stream to String");
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         StringBuilder sb = new StringBuilder();
-
-        String line;
+        String line = null;
         try {
             while ((line = reader.readLine()) != null) {
-                Log.d(this.getClass().getSimpleName(), line);
                 sb.append(line).append('\n');
             }
         } catch (IOException e) {

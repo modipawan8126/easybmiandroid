@@ -1,8 +1,13 @@
 package com.example.has7.easybmi;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -15,10 +20,14 @@ import com.example.has7.easybmi.handler.HttpHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
 
 public class BMIActivity extends AppCompatActivity {
 
@@ -28,8 +37,6 @@ public class BMIActivity extends AppCompatActivity {
     private String TAG = getClass().getSimpleName();
 
     HttpHandler httpHandler = new HttpHandler();
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,19 +68,42 @@ public class BMIActivity extends AppCompatActivity {
             e.printStackTrace();
             Log.e(this.getClass().getSimpleName(),e.getMessage());
         }
-
-
-        //String serviceUrl = easyBMI + "/" + heightStr + "/" + weightStr;
         TextView bmiTextView = (TextView) findViewById(R.id.bmi);
-        new GetBMI(easyBMIServiceURL, postData.toString(), bmiTextView).execute();
+        String bmiStr = null;
+
+        try {
+            bmiStr = (String) new GetBMI(easyBMIServiceURL, postData.toString()).execute().get();
+            Log.d(TAG, "result BMI: " + bmiStr);
+
+            if (!TextUtils.isEmpty(bmiStr)) {
+                bmiTextView.setText(bmiStr);
+            }
+
+        } catch (InterruptedException e) {
+            Log.e(TAG, e.getMessage());
+        } catch (ExecutionException e) {
+            Log.e(TAG, e.getMessage());
+        }
+
     }
 
-    public static void printMessage(BMIVO bmiVO, TextView bmiTextView) {
-        if (bmiVO != null && bmiVO.getBmi() != null) {
-            Log.d("BMIActivity", "BMI: " + bmiVO.getBmi());
-            bmiTextView.setText(bmiVO.getBmi());
-        } else {
-            bmiTextView.setText("Invalid input");
+    private String convertStreamToString(InputStream is) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+        String line = null;
+        try {
+            while ((line = reader.readLine()) != null) {
+                sb.append(line).append('\n');
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+        return sb.toString();
     }
 }
