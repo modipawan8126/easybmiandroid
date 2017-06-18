@@ -24,8 +24,9 @@ public class HttpHandler {
     public HttpHandler() {
     }
 
-    public String makeServiceCall(String reqUrl, String method, String data) {
-        String response = null;
+    public InputStream makeServiceCall(String reqUrl, String method, String data) {
+        //String response = null;
+        InputStream in = null;
         try {
             Log.d(TAG, "Url: " + reqUrl);
             URL url = new URL(reqUrl);
@@ -37,8 +38,8 @@ public class HttpHandler {
             wr.writeBytes(data);
             wr.flush();
             wr.close();
-            InputStream in = new BufferedInputStream(conn.getInputStream());
-            response = convertStreamToString(in);
+            in = new BufferedInputStream(conn.getInputStream());
+            //response = convertStreamToString(in);
         } catch (MalformedURLException e) {
             Log.e(TAG, "MalformedURLException: " + e.getMessage());
         } catch (ProtocolException e) {
@@ -48,7 +49,7 @@ public class HttpHandler {
         } catch (Exception e) {
             Log.e(TAG, "Exception: " + e.getMessage());
         }
-        return response;
+        return in;
     }
 
     private String convertStreamToString(InputStream is) {

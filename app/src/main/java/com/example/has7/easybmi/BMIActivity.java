@@ -72,9 +72,18 @@ public class BMIActivity extends AppCompatActivity {
         String bmiStr = null;
 
         try {
-            bmiStr = (String) new GetBMI(easyBMIServiceURL, postData.toString()).execute().get();
-            Log.d(TAG, "result BMI: " + bmiStr);
+            String jsonStr = (String) new GetBMI(easyBMIServiceURL, postData.toString()).execute().get();
 
+            Log.d(TAG, "result string: " + jsonStr);
+            if (!TextUtils.isEmpty(jsonStr)) {
+                try {
+                    JSONObject jsonObj = new JSONObject(jsonStr);
+                    bmiStr = jsonObj.getString("bmi");
+                } catch (JSONException e) {
+                    Log.e(TAG, e.getMessage());
+                }
+            }
+            Log.d(TAG, "result BMI: " + bmiStr);
             if (!TextUtils.isEmpty(bmiStr)) {
                 bmiTextView.setText(bmiStr);
             }
@@ -87,23 +96,4 @@ public class BMIActivity extends AppCompatActivity {
 
     }
 
-    private String convertStreamToString(InputStream is) {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-        StringBuilder sb = new StringBuilder();
-        String line = null;
-        try {
-            while ((line = reader.readLine()) != null) {
-                sb.append(line).append('\n');
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                is.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return sb.toString();
-    }
 }

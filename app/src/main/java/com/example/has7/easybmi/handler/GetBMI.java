@@ -7,6 +7,11 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 
 public class GetBMI extends AsyncTask<Void, Void, String> {
 
@@ -31,9 +36,9 @@ public class GetBMI extends AsyncTask<Void, Void, String> {
         HttpHandler httpHandler = new HttpHandler();
         Log.d(TAG, "ServiceUrl: " + serviceUrl);
         // Making a request to url and getting response
-        String jsonStr = httpHandler.makeServiceCall(serviceUrl, "POST", requestData);
-        Log.d(TAG, "Response from url: " + jsonStr);
-        String bmiStr = null;
+        InputStream inputStream = httpHandler.makeServiceCall(serviceUrl, "POST", requestData);
+        String jsonStr = convertStreamToString(inputStream);
+        /*String bmiStr = null;
         if (!TextUtils.isEmpty(jsonStr)) {
             try {
                 JSONObject jsonObj = new JSONObject(jsonStr);
@@ -41,15 +46,34 @@ public class GetBMI extends AsyncTask<Void, Void, String> {
             } catch (JSONException e) {
                 Log.e(TAG, e.getMessage());
             }
+        }*/
+        return jsonStr;
+    }
+
+    /*@Override
+    protected void onPostExecute(String jsonStr) {
+
+    }*/
+
+    private String convertStreamToString(InputStream is) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+        String line = null;
+        try {
+            while ((line = reader.readLine()) != null) {
+                sb.append(line).append('\n');
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        return bmiStr;
+        return sb.toString();
     }
-
-    @Override
-    protected void onPostExecute(String result) {
-        Log.d(TAG, "In PostMethod: " + result);
-    }
-
     public String getServiceUrl() {
         return serviceUrl;
     }
