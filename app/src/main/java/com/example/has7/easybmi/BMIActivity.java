@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -38,10 +39,20 @@ public class BMIActivity extends AppCompatActivity {
 
     HttpHandler httpHandler = new HttpHandler();
 
+    Button button;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bmi);
+
+        button = (Button)findViewById(R.id.button2);
+
+        button.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view) {
+                calculateBMI(view);
+            }
+        });
     }
 
     protected void calculateBMI(View view) {

@@ -109,7 +109,6 @@
                 android:layout_width="220dp"
                 android:layout_height="40dp"
                 android:layout_below="@+id/textView4"
-                android:onClick="calculateBMI"
                 android:text="Calculate BMI"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
