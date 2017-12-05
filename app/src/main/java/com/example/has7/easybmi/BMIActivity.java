@@ -1,12 +1,19 @@
 package com.example.has7.easybmi;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContextWrapper;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -17,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.has7.easybmi.handler.HttpHandler;
 
@@ -26,9 +34,7 @@ import java.util.Date;
 
 public class BMIActivity extends AppCompatActivity {
 
-    //private static String easyBMI = "https://easybmi.herokuapp.com/bmi";
-    //private static String easyBMIServiceURL = "https://easybmi.herokuapp.com/bmi/add/user";
-    //private static String easyBMIServiceURL = "http://192.168.1.102:9999/bmi/add/user";
+    private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 999;
     private String TAG = getClass().getSimpleName();
 
     HttpHandler httpHandler = new HttpHandler();
@@ -41,18 +47,19 @@ public class BMIActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bmi);
-
         button = (Button)findViewById(R.id.button2);
 
         share = (Button) findViewById(R.id.socialshare);
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                checkRequiredPermissions();
                 takeScreenshot();
             }
         });
-
         share.setVisibility(View.GONE);
+
+
 
         button.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view) {
@@ -61,6 +68,43 @@ public class BMIActivity extends AppCompatActivity {
         });
     }
 
+    private void checkRequiredPermissions() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ContextCompat.checkSelfPermission(BMIActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(BMIActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        Log.d(this.getClass().getSimpleName(), requestCode + "  " + grantResults[0] + "  " + permissions);
+        if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                //populateFriendList();
+            } else if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(BMIActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    final AlertDialog.Builder alertBuilder = new AlertDialog.Builder(BMIActivity.this);
+                    alertBuilder.setCancelable(true);
+                    alertBuilder.setTitle("Request to Write is Necessary");
+                    alertBuilder.setMessage("Write to storage permission is necessary for to save your BMI screens. You can share BMI screens with friends.");
+                    alertBuilder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            checkRequiredPermissions();
+                        }
+                    });
+
+                    AlertDialog alert = alertBuilder.create();
+                    alert.show();
+                } else {
+                    Toast.makeText(this, "Until you grant the permission, we canot display the friends", Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Toast.makeText(this, "Until you grant the permission, we canot display the friends", Toast.LENGTH_LONG).show();
+            }
+        }
+
+    }
     protected void calculateBMI(View view) {
 
         RadioGroup radioGroup = (RadioGroup) findViewById(R.id.sex);
@@ -122,11 +166,11 @@ public class BMIActivity extends AppCompatActivity {
         android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("easybmi-").append(now).append(".jpg");
+        sb.append("/easybmi-").append(System.currentTimeMillis()).append(".jpg");
 
         try {
             // image naming and path  to include sd card  appending name you choose for file
-            //String mPath = Environment.getExternalStorageDirectory().toString() + "/easybmi-" + now + ".jpg";
+            //String mPath = Environment.getExternalStorageDirectory().toString() + sb.toString();
 
             // create bitmap screen capture
             View v1 = getWindow().getDecorView().getRootView();
@@ -134,13 +178,22 @@ public class BMIActivity extends AppCompatActivity {
             Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
             v1.setDrawingCacheEnabled(false);
 
-            ContextWrapper cw = new ContextWrapper(getApplicationContext());
+            /*ContextWrapper cw = new ContextWrapper(getApplicationContext());
             File directory = cw.getDir("easybmi", this.MODE_PRIVATE);
             if (!directory.exists()) {
-                directory.mkdir();
+                directory = new File("/easybmi/");
+                directory.mkdirs();
+            }*/
+
+            String root = Environment.getExternalStorageDirectory().toString();
+            File directory = new File(root + "/easybmi/screen");
+            if (!directory.exists()) {
+                directory.mkdirs();
             }
 
             File imageFile = new File(directory, sb.toString());
+            //File imageFile = new File(mPath.trim());
+
             FileOutputStream outputStream = new FileOutputStream(imageFile);
             int quality = 100;
             bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
