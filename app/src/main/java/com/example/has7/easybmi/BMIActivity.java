@@ -62,7 +62,7 @@ public class BMIActivity extends AppCompatActivity {
             RadioButton radioButton = (RadioButton) findViewById(selectedId);
             String gender = (String) radioButton.getText();
 
-            float bmi = Utility.calculateBmi(heightStr, weightStr);
+            double bmi = Utility.calculateBmi(heightStr, weightStr);
             Log.d(this.getClass().getName(), "height:" + heightStr + " weight:" + weightStr + " Bmi: " + bmi);
             bmiTextView.setText(String.valueOf(bmi));
 

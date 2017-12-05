@@ -7,14 +7,17 @@ import android.util.Log;
  */
 
 public class Utility {
-    public static float calculateBmi(String height, String weight) {
+    public static double calculateBmi(String height, String weight) {
         float h = Float.parseFloat(height);
         float w = Float.parseFloat(weight);
         float heightInMeters = convertCmHeightToMeter(h);
         float heightsquare = heightInMeters * heightInMeters;
         float bmi = w / heightsquare;
         Log.d(Utility.class.getSimpleName(), "BMI: " + bmi);
-        return bmi;
+
+        double roundOff = Math.round(bmi * 100.0) / 100.0;
+
+        return roundOff;
     }
     private static float convertCmHeightToMeter(float height) {
         return height / 100;
@@ -22,7 +25,7 @@ public class Utility {
 
 
 
-    public static String bmiMessage(float bmi) {
+    public static String bmiMessage(double bmi) {
         if (bmi <= 15) {
             return "Very severely underweight";
         } else if (bmi > 15 && bmi <= 16) {
