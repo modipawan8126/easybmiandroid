@@ -1,9 +1,16 @@
 package com.example.has7.easybmi;
 
+import android.app.Activity;
+import android.content.ContextWrapper;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -12,6 +19,10 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.example.has7.easybmi.handler.HttpHandler;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Date;
 
 public class BMIActivity extends AppCompatActivity {
 
@@ -24,12 +35,24 @@ public class BMIActivity extends AppCompatActivity {
 
     Button button;
 
+    Button share;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bmi);
 
         button = (Button)findViewById(R.id.button2);
+
+        share = (Button) findViewById(R.id.socialshare);
+        share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                takeScreenshot();
+            }
+        });
+
+        share.setVisibility(View.GONE);
 
         button.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view) {
@@ -88,7 +111,61 @@ public class BMIActivity extends AppCompatActivity {
             }
 
 
+            share.setVisibility(View.VISIBLE);
+            hideSoftKeyboard();
         }
     }
 
+
+    private void takeScreenshot() {
+        Date now = new Date();
+        android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("easybmi-").append(now).append(".jpg");
+
+        try {
+            // image naming and path  to include sd card  appending name you choose for file
+            //String mPath = Environment.getExternalStorageDirectory().toString() + "/easybmi-" + now + ".jpg";
+
+            // create bitmap screen capture
+            View v1 = getWindow().getDecorView().getRootView();
+            v1.setDrawingCacheEnabled(true);
+            Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+            v1.setDrawingCacheEnabled(false);
+
+            ContextWrapper cw = new ContextWrapper(getApplicationContext());
+            File directory = cw.getDir("easybmi", this.MODE_PRIVATE);
+            if (!directory.exists()) {
+                directory.mkdir();
+            }
+
+            File imageFile = new File(directory, sb.toString());
+            FileOutputStream outputStream = new FileOutputStream(imageFile);
+            int quality = 100;
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+            outputStream.flush();
+            outputStream.close();
+
+            openScreenshot(imageFile);
+        } catch (Throwable e) {
+            // Several error may come out with file handling or DOM
+            e.printStackTrace();
+        }
+    }
+
+    private void openScreenshot(File imageFile) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        Uri uri = Uri.fromFile(imageFile);
+        intent.setDataAndType(uri, "image/*");
+        startActivity(intent);
+    }
+
+    public void hideSoftKeyboard() {
+        InputMethodManager inputMethodManager =
+                (InputMethodManager) getSystemService(
+                        Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+    }
 }

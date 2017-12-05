@@ -151,6 +151,29 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
+
+            <Button
+                android:id="@+id/socialshare"
+                android:layout_width="220dp"
+                android:layout_height="40dp"
+                android:layout_below="@+id/textView4"
+                android:text="Share"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                tools:layout_editor_absoluteY="245dp"
+                tools:text="Share" />
+
+            <TextView
+                android:id="@+id/authorText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.16"
+                android:fontFamily="cursive"
+                android:textAlignment="center"
+                android:textSize="10pt"
+                android:text="Designed Developed by JayPawSoft" />
+
+
         </LinearLayout>
 
     </LinearLayout>
