@@ -1,39 +1,22 @@
 package com.example.has7.easybmi;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.AsyncTask;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import com.example.has7.easybmi.domain.BMIVO;
-import com.example.has7.easybmi.handler.GetBMI;
 import com.example.has7.easybmi.handler.HttpHandler;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.concurrent.ExecutionException;
 
 public class BMIActivity extends AppCompatActivity {
 
     //private static String easyBMI = "https://easybmi.herokuapp.com/bmi";
-    private static String easyBMIServiceURL = "https://easybmi.herokuapp.com/bmi/add/user";
+    //private static String easyBMIServiceURL = "https://easybmi.herokuapp.com/bmi/add/user";
     //private static String easyBMIServiceURL = "http://192.168.1.102:9999/bmi/add/user";
     private String TAG = getClass().getSimpleName();
 
@@ -57,54 +40,55 @@ public class BMIActivity extends AppCompatActivity {
 
     protected void calculateBMI(View view) {
 
+        RadioGroup radioGroup = (RadioGroup) findViewById(R.id.sex);
+        int selectedId = radioGroup.getCheckedRadioButtonId();
+
+        Log.d(this.getClass().getSimpleName(), "selectedId: " + selectedId);
+
+
+        TextView bmiTextView = (TextView) findViewById(R.id.bmi);
+        TextView bmiMessageTextView = (TextView) findViewById(R.id.bmimessage);
+        ImageView imageView = (ImageView) findViewById(R.id.bmiuser);
+
+
         EditText height = (EditText) findViewById(R.id.height);
         EditText weight = (EditText) findViewById(R.id.weight);
-        EditText name = (EditText) findViewById(R.id.name);
-        EditText email = (EditText) findViewById(R.id.email);
-
         String heightStr = height.getText().toString();
         String weightStr = weight.getText().toString();
-        String nameStr = name.getText().toString();
-        String emailStr = email.getText().toString();
 
-        Log.d(this.getClass().getName(), "height:" + heightStr + " weight:" + weightStr + " name:" + nameStr + " email:" + emailStr);
+        if ((heightStr == null || heightStr.length() == 0 )|| (weightStr == null || weightStr.length() == 0) || selectedId == -1) {
+            bmiTextView.setText("Invalid Input..");
+        } else {
+            RadioButton radioButton = (RadioButton) findViewById(selectedId);
+            String gender = (String) radioButton.getText();
 
-        JSONObject postData = new JSONObject();
-        try {
-            postData.put("name", nameStr);
-            postData.put("email", emailStr);
-            postData.put("weight", weightStr);
-            postData.put("height", heightStr);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.e(this.getClass().getSimpleName(),e.getMessage());
-        }
-        TextView bmiTextView = (TextView) findViewById(R.id.bmi);
-        String bmiStr = null;
+            float bmi = Utility.calculateBmi(heightStr, weightStr);
+            Log.d(this.getClass().getName(), "height:" + heightStr + " weight:" + weightStr + " Bmi: " + bmi);
+            bmiTextView.setText(String.valueOf(bmi));
 
-        try {
-            String jsonStr = (String) new GetBMI(easyBMIServiceURL, postData.toString()).execute().get();
+            String bmiMsg = Utility.bmiMessage(bmi);
+            bmiMessageTextView.setText(bmiMsg);
 
-            Log.d(TAG, "result string: " + jsonStr);
-            if (!TextUtils.isEmpty(jsonStr)) {
-                try {
-                    JSONObject jsonObj = new JSONObject(jsonStr);
-                    bmiStr = jsonObj.getString("bmi");
-                } catch (JSONException e) {
-                    Log.e(TAG, e.getMessage());
+            if (gender.equalsIgnoreCase("male")) {
+                if (bmi <= 18) {
+                    imageView.setImageResource(R.mipmap.boy1);
+                } else if ( bmi > 18 && bmi <= 25) {
+                    imageView.setImageResource(R.mipmap.boy2);
+                } else {
+                    imageView.setImageResource(R.mipmap.boy3);
+                }
+            } else {
+                if (bmi <= 18) {
+                    imageView.setImageResource(R.mipmap.girl1);
+                } else if ( bmi > 18 && bmi <= 25) {
+                    imageView.setImageResource(R.mipmap.girl2);
+                } else {
+                    imageView.setImageResource(R.mipmap.girl3);
                 }
             }
-            Log.d(TAG, "result BMI: " + bmiStr);
-            if (!TextUtils.isEmpty(bmiStr)) {
-                bmiTextView.setText(bmiStr);
-            }
 
-        } catch (InterruptedException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (ExecutionException e) {
-            Log.e(TAG, e.getMessage());
+
         }
-
     }
 
 }

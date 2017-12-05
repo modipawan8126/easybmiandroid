@@ -8,98 +8,103 @@
 
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="312dp"
-        android:layout_height="536dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_marginTop="5dp"
         android:orientation="vertical"
-        android:paddingLeft="30dp"
+
         android:scrollbars="vertical"
         android:weightSum="1"
+        android:gravity="center"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints">
 
         <LinearLayout
-            android:layout_width="258dp"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:paddingLeft="20dp"
+            android:gravity="center"
             android:layout_marginTop="5dp"
             android:visibility="visible"
             android:weightSum="1"
             tools:ignore="MissingConstraints"
-            tools:layout_editor_absoluteX="31dp"
-            tools:layout_editor_absoluteY="5dp">
+            >
+
+            <RadioGroup
+                android:id="@+id/sex"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/male"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:text="male"
+                    android:textSize="16dp"/>
+
+                <RadioButton
+                    android:id="@+id/female"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:text="female"
+                    android:textSize="16dp"/>
+
+            </RadioGroup>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="5dp"
+            android:visibility="visible"
+            android:weightSum="1"
+            tools:ignore="MissingConstraints"
+             >
 
             <EditText
                 android:id="@+id/height"
-                android:layout_width="95dp"
+                android:layout_width="110dp"
+                android:gravity="center"
                 android:layout_height="45dp"
                 android:layout_below="@+id/weight"
-                android:ems="10"
-                android:hint="height"
-                android:inputType="textPersonName"
-                tools:layout_editor_absoluteX="109dp"
-                tools:layout_editor_absoluteY="86dp" />
+
+                android:hint="height in cm"
+                android:maxLength="4"
+                android:inputType="numberDecimal" />
 
             <EditText
                 android:id="@+id/weight"
-                android:layout_width="95dp"
+                android:layout_width="110dp"
+                android:gravity="center"
                 android:layout_height="45dp"
                 android:layout_below="@+id/button2"
-                android:layout_marginLeft="30dp"
-                android:ems="10"
-                android:hint="weight"
-                android:inputType="textPersonName" />
+                android:layout_marginLeft="10dp"
+
+                android:hint="weight in kg"
+                android:maxLength="4"
+                android:inputType="numberDecimal" />
         </LinearLayout>
 
+
+
         <LinearLayout
-            android:layout_width="261dp"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_marginTop="5dp"
             android:layout_weight="0.04"
             android:orientation="vertical"
             android:paddingLeft="20dp"
             android:visibility="visible"
             android:weightSum="1"
-            tools:ignore="MissingConstraints"
-            tools:layout_editor_absoluteX="31dp"
-            tools:layout_editor_absoluteY="5dp">
-
-            <EditText
-                android:id="@+id/name"
-                android:layout_width="220dp"
-                android:layout_height="45dp"
-                android:layout_below="@+id/weight"
-                android:layout_weight="0.03"
-                android:ems="10"
-                android:hint="name"
-                android:inputType="textPersonName"
-                tools:layout_editor_absoluteX="109dp"
-                tools:layout_editor_absoluteY="86dp" />
-
-            <EditText
-                android:id="@+id/email"
-                android:layout_width="220dp"
-                android:layout_height="45dp"
-                android:layout_below="@+id/button2"
-                android:layout_marginTop="5dp"
-                android:layout_weight="0.04"
-                android:ems="10"
-                android:hint="email"
-                android:inputType="textPersonName" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="261dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_weight="0.04"
-            android:orientation="vertical"
-            android:paddingLeft="20dp"
-            android:visibility="visible"
-            android:weightSum="1"
+            android:gravity="center"
             tools:ignore="MissingConstraints"
             tools:layout_editor_absoluteX="31dp"
             tools:layout_editor_absoluteY="5dp">
@@ -117,7 +122,7 @@
 
             <TextView
                 android:id="@+id/bmi"
-                android:layout_width="220dp"
+                android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_weight="0.17"
                 android:fadingEdge="horizontal|vertical"
@@ -126,6 +131,25 @@
                 android:textAlignment="center"
                 android:textColor="@android:color/holo_orange_dark"
                 android:textSize="36sp" />
+
+            <TextView
+                android:id="@+id/bmimessage"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_weight="0.17"
+                android:gravity="center"
+                android:fadingEdge="horizontal|vertical"
+                android:fontFamily="monospace"
+                android:text="bmi message"
+                android:textAlignment="center"
+                android:textColor="@android:color/holo_orange_dark"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/bmiuser"
+                android:scaleType="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
 
