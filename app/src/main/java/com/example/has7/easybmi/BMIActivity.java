@@ -184,7 +184,7 @@ public class BMIActivity extends AppCompatActivity {
                 directory.mkdirs();
             }
 
-            File imageFile = new File(directory, sb.toString());             
+            File imageFile = new File(directory, sb.toString());
 
             FileOutputStream outputStream = new FileOutputStream(imageFile);
             int quality = 100;

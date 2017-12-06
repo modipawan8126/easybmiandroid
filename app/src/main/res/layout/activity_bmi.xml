@@ -76,7 +76,6 @@
                 android:gravity="center"
                 android:layout_height="45dp"
                 android:layout_below="@+id/weight"
-
                 android:hint="height in cm"
                 android:maxLength="6"
                 android:inputType="numberDecimal" />
