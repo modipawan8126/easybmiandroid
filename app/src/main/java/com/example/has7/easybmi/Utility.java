@@ -1,5 +1,8 @@
 package com.example.has7.easybmi;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.util.Log;
 
 /**
@@ -45,5 +48,34 @@ public class Utility {
         }
     }
 
+    public static Bitmap waterMark(Bitmap bitmap, String watermark, int color) {
+        //get source image width and height
+        int w = bitmap.getWidth();
+        int h = bitmap.getHeight();
 
+        int msglength = watermark.length();
+        int posX = (w/2) - msglength;
+        Log.d(Utility.class.getSimpleName(), w + "  " + msglength + "  " + posX);
+
+        //Bitmap result = Bitmap.createBitmap(w, h, src.getConfig());
+        //create canvas object
+        Canvas canvas = new Canvas(bitmap);
+        //draw bitmap on canvas
+        canvas.drawBitmap(bitmap, 0, 0, null);
+        //create paint object
+        Paint paint = new Paint();
+        //apply color
+        paint.setColor(color);
+        //set transparency
+        paint.setAlpha(250);
+        //set text size
+        paint.setTextSize(40);
+        paint.setAntiAlias(true);
+        //set should be underlined or not
+        paint.setUnderlineText(false);
+        //draw text on given location
+        canvas.drawText(watermark, posX, 900, paint);
+
+        return bitmap;
+    }
 }

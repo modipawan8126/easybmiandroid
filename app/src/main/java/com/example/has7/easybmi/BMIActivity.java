@@ -3,7 +3,6 @@ package com.example.has7.easybmi;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -26,8 +25,6 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.has7.easybmi.handler.HttpHandler;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Date;
@@ -37,11 +34,11 @@ public class BMIActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 999;
     private String TAG = getClass().getSimpleName();
 
-    HttpHandler httpHandler = new HttpHandler();
-
     Button button;
 
-    Button share;
+    ImageView share;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +46,7 @@ public class BMIActivity extends AppCompatActivity {
         setContentView(R.layout.activity_bmi);
         button = (Button)findViewById(R.id.button2);
 
-        share = (Button) findViewById(R.id.socialshare);
+        share = (ImageView) findViewById(R.id.socialshare);
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,7 +113,10 @@ public class BMIActivity extends AppCompatActivity {
         TextView bmiTextView = (TextView) findViewById(R.id.bmi);
         TextView bmiMessageTextView = (TextView) findViewById(R.id.bmimessage);
         ImageView imageView = (ImageView) findViewById(R.id.bmiuser);
+        TextView timestamp = (TextView) findViewById(R.id.timestamp);
 
+        String date = (String) android.text.format.DateFormat.format("dd-MMM-yy hh:mm:ss a", new Date());
+        timestamp.setText(date);
 
         EditText height = (EditText) findViewById(R.id.height);
         EditText weight = (EditText) findViewById(R.id.weight);
@@ -138,22 +138,27 @@ public class BMIActivity extends AppCompatActivity {
 
             if (gender.equalsIgnoreCase("male")) {
                 if (bmi <= 18) {
-                    imageView.setImageResource(R.mipmap.boy1);
+                    imageView.setImageResource(R.drawable.boy1resize);
                 } else if ( bmi > 18 && bmi <= 25) {
-                    imageView.setImageResource(R.mipmap.boy2);
+                    imageView.setImageResource(R.drawable.boy2resize);
                 } else {
-                    imageView.setImageResource(R.mipmap.boy3);
+                    imageView.setImageResource(R.drawable.boy3resize);
                 }
             } else {
                 if (bmi <= 18) {
-                    imageView.setImageResource(R.mipmap.girl1);
+                    imageView.setImageResource(R.drawable.girl1resize);
                 } else if ( bmi > 18 && bmi <= 25) {
-                    imageView.setImageResource(R.mipmap.girl2);
+                    imageView.setImageResource(R.drawable.girl2resize);
                 } else {
-                    imageView.setImageResource(R.mipmap.girl3);
+                    imageView.setImageResource(R.drawable.girl3resize);
                 }
             }
 
+            //imageView.setImageResource(R.drawable.boy1resize);
+           /* ViewGroup.LayoutParams params = (ViewGroup.LayoutParams) imageView.getLayoutParams();
+            params.width = 120;*/
+            // existing height is ok as is, no need to edit it
+            //imageView.setLayoutParams(params);
 
             share.setVisibility(View.VISIBLE);
             hideSoftKeyboard();
@@ -162,15 +167,10 @@ public class BMIActivity extends AppCompatActivity {
 
 
     private void takeScreenshot() {
-        Date now = new Date();
-        android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now);
-
         StringBuilder sb = new StringBuilder();
         sb.append("/easybmi-").append(System.currentTimeMillis()).append(".jpg");
 
         try {
-            // image naming and path  to include sd card  appending name you choose for file
-            //String mPath = Environment.getExternalStorageDirectory().toString() + sb.toString();
 
             // create bitmap screen capture
             View v1 = getWindow().getDecorView().getRootView();
@@ -178,21 +178,13 @@ public class BMIActivity extends AppCompatActivity {
             Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
             v1.setDrawingCacheEnabled(false);
 
-            /*ContextWrapper cw = new ContextWrapper(getApplicationContext());
-            File directory = cw.getDir("easybmi", this.MODE_PRIVATE);
-            if (!directory.exists()) {
-                directory = new File("/easybmi/");
-                directory.mkdirs();
-            }*/
-
             String root = Environment.getExternalStorageDirectory().toString();
             File directory = new File(root + "/easybmi/screen");
             if (!directory.exists()) {
                 directory.mkdirs();
             }
 
-            File imageFile = new File(directory, sb.toString());
-            //File imageFile = new File(mPath.trim());
+            File imageFile = new File(directory, sb.toString());             
 
             FileOutputStream outputStream = new FileOutputStream(imageFile);
             int quality = 100;
